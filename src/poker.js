@@ -6,12 +6,7 @@ let _ = require('lodash');
 let tags = "3-4-J-1-A";
 let tag = "J-3-A-A";
 function formatInputs(tags) {
-    let a = _.chain(tags)
-        .split('-')
-        .value();
-    //console.log(a);
-    return a;
-
+    return tags.split('-');
 }
 function getNormalPoints(getPoints) {
     return _.chain(getPoints)
@@ -19,7 +14,7 @@ function getNormalPoints(getPoints) {
         .map(x=> {
             //console.log(x);
             if (x === "J" || x === "Q" || x === "K") {
-                return _.replace(x, x, "10");
+                return 10;
             } else
                 return x;
         })
@@ -34,9 +29,7 @@ function getAllPoints(gotNormalPoints, getPoints) {
     let add = gotNormalPoints;
     //console.log(add);
     let sumA;
-    let a = _.chain(getPoints)
-        .filter(x=>x === 'A')
-        .value();
+    let a = _.filter(getPoints, (x=>x === 'A'));
     if (a.length === 0) {
         sumA = add
     }
