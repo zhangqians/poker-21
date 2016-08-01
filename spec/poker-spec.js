@@ -4,7 +4,7 @@
 'use strict';
 let {formatInputs, getNormalPoints, getAllPoints, comparePoints,poker}=require('../src/poker.js');
 
-
+//1
 describe('poker.js', function () {
     it('should print format points inputs', ()=> {
         let inputs = "3-4-J-1-A";
@@ -13,27 +13,37 @@ describe('poker.js', function () {
         expect(builtFormatPoints).toEqual(printFormation);
 
     });
+//2
+
+    it('should print normal points', ()=> {
+        let inputs = ['3', '4', '5', '1', '4'];
+        let gotNormalPoints = getNormalPoints(inputs);
+        let printNormalPoints = 17;
+        expect(gotNormalPoints).toEqual(printNormalPoints);
+    });
+
+
+    it('should print normal points', ()=> {
+        let inputs = ['J', 'K', 'J', 'Q'];
+        let gotNormalPoints = getNormalPoints(inputs);
+        let printNormalPoints = 40;
+        expect(gotNormalPoints).toEqual(printNormalPoints);
+    });
+
+
+    it('should print normal points', ()=> {
+        let inputs = ['J', 'K', 'J', 'A'];
+        let gotNormalPoints = getNormalPoints(inputs);
+        let printNormalPoints = 30;
+        expect(gotNormalPoints).toEqual(printNormalPoints);
+    });
+
 
     it('should print normal points', ()=> {
         let inputs = ['3', '4', 'J', '1', 'A'];
         let gotNormalPoints = getNormalPoints(inputs);
         let printNormalPoints = 18;
         expect(gotNormalPoints).toEqual(printNormalPoints);
-    });
-    it('should print all points', ()=> {
-        let inputs = 18;
-        let input = ['3', '4', 'J', '1', 'A'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 19;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-    it('should print all points', ()=> {
-        let inputs = 5;
-        let input = ['2', '3', 'A', 'A', 'A'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 18;
-        expect(allPoints).toEqual(builtAllPoints);
     });
 
 
@@ -45,12 +55,53 @@ describe('poker.js', function () {
 
     });
 
+
+
+
     it('should print normal points', ()=> {
         let inputs = ['3', 'A', 'J', '1', 'A'];
         let gotNormalPoints = getNormalPoints(inputs);
         let printNormalPoints = 14;
         expect(gotNormalPoints).toEqual(printNormalPoints);
     });
+
+
+    //3
+
+    it('should print all points', ()=> {
+        let inputs = 20;
+        let input = ['3', '4', '10', '3'];
+        let allPoints = getAllPoints(inputs, input);
+        let builtAllPoints = 20;
+        expect(allPoints).toEqual(builtAllPoints);
+    });
+
+    it('should print all points', ()=> {
+        let inputs = 18;
+        let input = ['3', '4', 'J', '1'];
+        let allPoints = getAllPoints(inputs, input);
+        let builtAllPoints = 18;
+        expect(allPoints).toEqual(builtAllPoints);
+    });
+
+    it('should print all points', ()=> {
+        let inputs = 30;
+        let input = ['J', 'J', 'K'];
+        let allPoints = getAllPoints(inputs, input);
+        let builtAllPoints = 30;
+        expect(allPoints).toEqual(builtAllPoints);
+    });
+
+
+    it('should print all points', ()=> {
+        let inputs = 5;
+        let input = ['2', '3', 'A', 'A', 'A'];
+        let allPoints = getAllPoints(inputs, input);
+        let builtAllPoints = 18;
+        expect(allPoints).toEqual(builtAllPoints);
+    });
+
+
 
     it('should print all points', ()=> {
         let inputs = 22;
@@ -70,6 +121,7 @@ describe('poker.js', function () {
     });
 
 
+    //4
     it('should print comparePoints result', ()=> {
         let inputs = 19;
         let input = 16;
@@ -83,8 +135,8 @@ describe('poker.js', function () {
 
 
     it('should print comparePoints result', ()=> {
-        let inputs = 5;
-        let input = 22;
+        let inputs = 18;
+        let input = 23;
         let pointA = ['2', '3', 'A', 'A', 'A'];
         let pointB = ['3', '4', '5', 'A', 'J'];
         let builtWinner = comparePoints(inputs, input, pointA, pointB);
@@ -92,6 +144,44 @@ describe('poker.js', function () {
         expect(builtWinner).toEqual(printMessage);
 
     });
+
+
+    it('should print comparePoints result', ()=> {
+        let inputs = 24;
+        let input = 27;
+        let pointA = ['2', 'J', '2','Q'];
+        let pointB = ['1', 'Q', '5', 'A', 'J'];
+        let builtWinner = comparePoints(inputs, input, pointA, pointB);
+        let printMessage = "both loser";
+        expect(builtWinner).toEqual(printMessage);
+
+    });
+
+
+    it('should print comparePoints result', ()=> {
+        let inputs = 14;
+        let input = 14;
+        let pointA = ['2', 'J', '2'];
+        let pointB = ['1', 'Q', '3'];
+        let builtWinner = comparePoints(inputs, input, pointA, pointB);
+        let printMessage = "a dead heat";
+        expect(builtWinner).toEqual(printMessage);
+
+    });
+
+
+    it('should print comparePoints result', ()=> {
+        let inputs = 14;
+        let input = 14;
+        let pointA = ['2', 'J', '1','1'];
+        let pointB = ['1', 'Q', '3'];
+        let builtWinner = comparePoints(inputs, input, pointA, pointB);
+        let printMessage = "B is winner";
+        expect(builtWinner).toEqual(printMessage);
+
+    });
+
+
 
 
 //集成测试
