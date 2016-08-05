@@ -3,114 +3,60 @@
  */
 "use strict"
 let _ = require('lodash');
-let tags = "3-4-J-1-A";
-let tag = "J-3-A-A";
-function formatInputs(tags) {
-    return tags.split('-');
-}
-function getNormalPoints(getPoints) {
-    return _.chain(getPoints)
-        .filter(x=>x !== 'A')
-        .map(x=> {
-            //console.log(x);
-            if (x === "J" || x === "Q" || x === "K") {
-                return 10;
-            } else
-                return x;
-        })
-        .map(x=>_.parseInt(x))
-        .sum()
-        .value();
-//console.log(a);
+function getCards(inputs) {
+    return inputs.split('-');
 
 }
-
-function getAllPoints(gotNormalPoints, getPoints) {
-    let add = gotNormalPoints;
-    //console.log(add);
-    let sumA;
-    let a = _.filter(getPoints, (x=>x === 'A'));
-    if (a.length === 0) {
-        sumA = add
-    }
-    let sub = 21 - add;
-    if (a.length > 0 && sub < 0) {
-        sumA = add + a.length;
-    } else if (a.length > 0 && sub > 0) {
-        let div = sub / 11;
-        //console.log(div);
-        if (div < 1) {
-            sumA = add + a.length;
-        } else if (div > 1 && a.length === 1) {
-            sumA = add + 11;
-        } else if (div > 1 && a.length > 1) {
-            sumA = add + 11 + a.length - 1;
-        }
-
-    }
-
-    //console.log(sumA);
-    return sumA;
-
+function convertJkqToNumberCards(formattedCodes) {
+    return _.map(formattedCodes, x=> {
+        return (['J', 'Q', 'K'].includes(x)) ? '10' : x
+    });
 }
 
-function comparePoints(gotAllPoints, gotAllPoint, getPoints, getPoint) {
-    if (gotAllPoints > 21 && gotAllPoint > 21) {
-        console.log('both loser');
-        return 'both loser';
-    } else if (gotAllPoints > 21 && gotAllPoint < 21) {
-        console.log('B is winner');
-        return 'B is winner';
-    } else if (gotAllPoints < 21 && gotAllPoint > 21) {
-        console.log('A is winner');
-        return 'A is winner';
-    }
-    if (gotAllPoints < 21 && gotAllPoint < 21 && gotAllPoints === gotAllPoint) {
-        if (getPoints.length === getPoint.length) {
-            console.log("a dead heat");
-            return "a dead heat";
-        } else if (getPoints.length < getPoint.length) {
-            console.log("A is winner");
-            return "A is winner";
-        } else {
-            console.log("B is winner");
-            return "B is winner";
-        }
+function getPointAndCount(numberCards) {
+    let countOfA = _(numberCards).filter(x => x === 'A').size();
+    let initialPoint = _(numberCards)
+        .map(x => x === 'A' ? 1 : parseInt(x))
+        .sum();
 
-    } else if (gotAllPoints < 21 && gotAllPoint < 21 && gotAllPoints !== gotAllPoint) {
-        let a = 21 - gotAllPoints;
-        let b = 21 - gotAllPoint;
-        if (a > b) {
-            console.log("B is winner");
-            return 'B is winner';
-        } else {
-            console.log('A is winner');
-            return 'A is winner';
-        }
-    }
+    let point = _(_.times(countOfA)).reduce(bestPoint => {
+        let tryPoint = bestPoint + 10;
+        return tryPoint > 21 ? bestPoint : tryPoint;
+    }, initialPoint);
+
+    return {
+        point:point,
+        count: numberCards.length
+    };
+}
+function getComparedResult(aPointAndCount, bPointAndCount) {
+    let {point:aPoint, count:aCount} = aPointAndCount;
+    let {point:bPoint, count:bCount} = bPointAndCount;
+    if (aPoint > 21 && bPoint > 21) return 'tied';
+    if (aPoint > 21) return 'B won';
+    if (bPoint > 21) return 'A won';
+    if (aPoint > bPoint) return 'A won';
+    if (bPoint > aPoint) return 'B won';
+    if (aCount > bCount) return 'B won';
+    if (bCount > aCount) return 'A won';
+    return 'tied';
 }
 
-function poker(tags, tag) {
-    let getPoints = formatInputs(tags);
-    let gotNormalPoints = getNormalPoints(getPoints);
-    let gotAllPoints = getAllPoints(gotNormalPoints, getPoints);
-
-
-    let getPoint = formatInputs(tag);
-    let gotNormalPoint = getNormalPoints(getPoint);
-    let gotAllPoint = getAllPoints(gotNormalPoint, getPoint);
-
-
-    let note = comparePoints(gotAllPoints, gotAllPoint, getPoints, getPoint);
-    return note;
+function printWinner(inputA, inputB) {
+    let numberCodeA=convertJkqToNumberCards(getCards(inputA));
+    let aPointAndCount = getPointAndCount(numberCodeA);
+    let numberCodeB=convertJkqToNumberCards(getCards(inputB));
+    let bPointAndCount = getPointAndCount(numberCodeB);
+    let result = getComparedResult(aPointAndCount, bPointAndCount);
+    console.log(result);
 }
 
-poker(tags, tag);
+
 
 module.exports = {
-    formatInputs: formatInputs,
-    getNormalPoints: getNormalPoints,
-    getAllPoints: getAllPoints,
-    comparePoints: comparePoints,
-    poker: poker
-};
+    getCards,
+    convertJkqToNumberCards,
+    getPointAndCount,
+    getComparedResult,
+    printWinner
+}
