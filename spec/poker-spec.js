@@ -2,237 +2,141 @@
  * Created by zhagnian on 16-7-29.
  */
 'use strict';
-let {formatInputs, getNormalPoints, getAllPoints, comparePoints,poker}=require('../src/poker.js');
+let {
+    getCards,
+    convertJkqToNumberCards,
+    getPointAndCount,
+    getComparedResult,
+    printWinner
+} = require('../src/poker.js');
 
-//1
-describe('poker.js', function () {
-    it('should print format points inputs', ()=> {
-        let inputs = "3-4-J-1-A";
-        let builtFormatPoints = formatInputs(inputs);
-        let printFormation = ['3', '4', 'J', '1', 'A'];
-        expect(builtFormatPoints).toEqual(printFormation);
+describe('poker-21', function () {
 
-    });
-//2
-
-    it('should print normal points', ()=> {
-        let inputs = ['3', '4', '5', '1', '4'];
-        let gotNormalPoints = getNormalPoints(inputs);
-        let printNormalPoints = 17;
-        expect(gotNormalPoints).toEqual(printNormalPoints);
+    it('should get cards from input', function () {
+        let input = 'A-3-J-Q-7';
+        let cards = getCards(input);
+        let expected = ['A', '3', 'J', 'Q', '7'];
+        expect(cards).toEqual(expected)
     });
 
+    describe('convertJkqToNumberCards', ()=> {
+        it('should convert J,K,Q to 10', function () {
+            let formattedInput = ['4', '2', 'Q', 'J', 'K'];
+            let normalPoints = convertJkqToNumberCards(formattedInput);
+            let expected = ['4', '2', '10', '10', '10'];
+            expect(normalPoints).toEqual(expected);
+        });
 
-    it('should print normal points', ()=> {
-        let inputs = ['J', 'K', 'J', 'Q'];
-        let gotNormalPoints = getNormalPoints(inputs);
-        let printNormalPoints = 40;
-        expect(gotNormalPoints).toEqual(printNormalPoints);
-    });
-
-
-    it('should print normal points', ()=> {
-        let inputs = ['J', 'K', 'J', 'A'];
-        let gotNormalPoints = getNormalPoints(inputs);
-        let printNormalPoints = 30;
-        expect(gotNormalPoints).toEqual(printNormalPoints);
+        it('should keep A unchanged', function () {
+            let formattedInput = ['A', '2'];
+            let normalPoints = convertJkqToNumberCards(formattedInput);
+            let expected = ['A', '2'];
+            expect(normalPoints).toEqual(expected)
+        });
     });
 
 
-    it('should print normal points', ()=> {
-        let inputs = ['3', '4', 'J', '1', 'A'];
-        let gotNormalPoints = getNormalPoints(inputs);
-        let printNormalPoints = 18;
-        expect(gotNormalPoints).toEqual(printNormalPoints);
-    });
+    describe('getPointAndCount', ()=> {
+        it('should get point and count for cards 2~10', function () {
+            let numberCards = ['2', '5', '10'];
+            let pointAndCount = getPointAndCount(numberCards);
+            let expected = {
+                point: 17,
+                count: 3
+            };
+            expect(pointAndCount).toEqual(expected)
+        });
 
+        it('should get point and count when considering A as 1', function () {
+            let normalPoints = ['A', '2', '3', '4', '10'];
+            let pointAndCount = getPointAndCount(normalPoints);
+            let expected = {
+                point: 20,
+                count: 5
+            };
+            expect(pointAndCount).toEqual(expected)
+        });
 
-    it('should print format points inputs', ()=> {
-        let inputs = "3-A-J-1-A";
-        let builtFormatPoints = formatInputs(inputs);
-        let printFormation = ['3', 'A', 'J', '1', 'A'];
-        expect(builtFormatPoints).toEqual(printFormation);
+        it('should get point and count when considering A as 11', function () {
+            let normalPoints = ['A', '2', '3', '4'];
+            let pointAndCount = getPointAndCount(normalPoints);
+            let expected = {
+                point: 20,
+                count: 4
+            };
+            expect(pointAndCount).toEqual(expected);
+        });
 
-    });
-
-
-
-
-    it('should print normal points', ()=> {
-        let inputs = ['3', 'A', 'J', '1', 'A'];
-        let gotNormalPoints = getNormalPoints(inputs);
-        let printNormalPoints = 14;
-        expect(gotNormalPoints).toEqual(printNormalPoints);
-    });
-
-
-    //3
-
-    it('should print all points', ()=> {
-        let inputs = 20;
-        let input = ['3', '4', '10', '3'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 20;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-    it('should print all points', ()=> {
-        let inputs = 18;
-        let input = ['3', '4', 'J', '1'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 18;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-    it('should print all points', ()=> {
-        let inputs = 30;
-        let input = ['J', 'J', 'K'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 30;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-
-    it('should print all points', ()=> {
-        let inputs = 5;
-        let input = ['2', '3', 'A', 'A', 'A'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 18;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-
-
-    it('should print all points', ()=> {
-        let inputs = 22;
-        let input = ['3', '4', '5', 'A', 'J'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 23;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-
-    it('should print all points', ()=> {
-        let inputs = 14;
-        let input = ['3', 'A', 'J', '1', 'A'];
-        let allPoints = getAllPoints(inputs, input);
-        let builtAllPoints = 16;
-        expect(allPoints).toEqual(builtAllPoints);
-    });
-
-
-    //4
-    it('should print comparePoints result', ()=> {
-        let inputs = 19;
-        let input = 16;
-        let pointA = ['3', '4', 'J', '1', 'A'];
-        let pointB = ['3', 'A', 'J', '1', 'A'];
-        let builtWinner = comparePoints(inputs, input, pointA, pointB);
-        let printMessage = "A is winner";
-        expect(builtWinner).toEqual(printMessage);
+        it('should get point and count for multiple A cards', function () {
+            let cards = ['A', '2', 'A', '3', '4', 'A'];
+            let pointAndCount = getPointAndCount(cards);
+            let expected = {
+                point: 12,
+                count: 6
+            };
+            expect(pointAndCount).toEqual(expected)
+        });
 
     });
 
+    describe('getCompareResult', ()=> {
+        describe('at least one >21', ()=> {
+            it('both > 21', function () {
+                let aPointAndCount = {point: 22, count: 4};
+                let bPointAndCount = {point: 28, count: 4};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'tied';
+                expect(compareResult).toEqual(expected)
+            });
+            it('A > 21', function () {
+                let aPointAndCount = {point: 22, count: 4};
+                let bPointAndCount = {point: 1, count: 4};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'B won';
+                expect(compareResult).toEqual(expected)
+            });
+            it('B > 21', function () {
+                let aPointAndCount = {point: 1, count: 4};
+                let bPointAndCount = {point: 22, count: 4};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'A won';
+                expect(compareResult).toEqual(expected)
+            });
+        });
 
-    it('should print comparePoints result', ()=> {
-        let inputs = 18;
-        let input = 23;
-        let pointA = ['2', '3', 'A', 'A', 'A'];
-        let pointB = ['3', '4', '5', 'A', 'J'];
-        let builtWinner = comparePoints(inputs, input, pointA, pointB);
-        let printMessage = "A is winner";
-        expect(builtWinner).toEqual(printMessage);
-
+        describe('both <= 21', ()=> {
+            it('A > B', ()=> {
+                let aPointAndCount = {point: 21, count: 4};
+                let bPointAndCount = {point: 20, count: 4};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'A won';
+                expect(compareResult).toEqual(expected)
+            });
+            it('A < B', ()=> {
+                let aPointAndCount = {point: 20, count: 4};
+                let bPointAndCount = {point: 21, count: 4};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'B won';
+                expect(compareResult).toEqual(expected)
+            });
+            it('A == B, and count of A > count of B', ()=> {
+                let aPointAndCount = {point: 20, count: 4};
+                let bPointAndCount = {point: 20, count: 3};
+                let compareResult = getComparedResult(aPointAndCount, bPointAndCount);
+                let expected = 'B won';
+                expect(compareResult).toEqual(expected)
+            })
+        });
     });
 
-
-    it('should print comparePoints result', ()=> {
-        let inputs = 24;
-        let input = 27;
-        let pointA = ['2', 'J', '2','Q'];
-        let pointB = ['1', 'Q', '5', 'A', 'J'];
-        let builtWinner = comparePoints(inputs, input, pointA, pointB);
-        let printMessage = "both loser";
-        expect(builtWinner).toEqual(printMessage);
-
+    // integration testing
+    it('should print winner for two inputs', function () {
+        spyOn(console, 'log');
+        let inputA = 'A-J-3-4';
+        let inputB = 'A-J-7';
+        printWinner(inputA, inputB);
+        let expected = 'B won';
+        expect(console.log).toHaveBeenCalledWith(expected);
     });
-
-
-    it('should print comparePoints result', ()=> {
-        let inputs = 14;
-        let input = 14;
-        let pointA = ['2', 'J', '2'];
-        let pointB = ['1', 'Q', '3'];
-        let builtWinner = comparePoints(inputs, input, pointA, pointB);
-        let printMessage = "a dead heat";
-        expect(builtWinner).toEqual(printMessage);
-
-    });
-
-
-    it('should print comparePoints result', ()=> {
-        let inputs = 14;
-        let input = 14;
-        let pointA = ['2', 'J', '1','1'];
-        let pointB = ['1', 'Q', '3'];
-        let builtWinner = comparePoints(inputs, input, pointA, pointB);
-        let printMessage = "B is winner";
-        expect(builtWinner).toEqual(printMessage);
-
-    });
-
-
-
-
-//集成测试
-    it('should print the winner', ()=> {
-        let inputs = "A-1-3-5-J";
-        let input = "A-A-4";
-        let getWinner = poker(inputs, input);
-        let printWinner = "A is winner";
-        expect(getWinner).toEqual(printWinner);
-
-    });
-
-
-    it('should print the winner', ()=> {
-        let inputs = "3-4-A";
-        let input = "7-A";
-        let getWinner = poker(inputs, input);
-        let printWinner = "B is winner";
-        expect(getWinner).toEqual(printWinner);
-
-    });
-
-
-    it('should print the winner', ()=> {
-        let inputs = "1-3-4-A";
-        let input = "1-3-4-A";
-        let getWinner = poker(inputs, input);
-        let printWinner = "a dead heat";
-        expect(getWinner).toEqual(printWinner);
-
-    });
-
-
-    it('should print the winner', ()=> {
-        let inputs = "J-3-K-A";
-        let input = "Q-3-J-A";
-        let getWinner = poker(inputs, input);
-        let printWinner = "both loser";
-        expect(getWinner).toEqual(printWinner);
-
-    });
-
-
-    it('should print the winner', ()=> {
-        let inputs = "J-3-K-A";
-        let input = "1-3-1-A";
-        let getWinner = poker(inputs, input);
-        let printWinner = "B is winner";
-        expect(getWinner).toEqual(printWinner);
-
-    });
-
 
 });
